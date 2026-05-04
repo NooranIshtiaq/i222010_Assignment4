@@ -52,7 +52,7 @@ services:
 
     volumes:
       - ./src:/app/src
-      - ../Data:/Data
+      - ../Data:/app/Data
       - ./run_pipeline.py:/app/run_pipeline.py
       - mlflow_data:/mlflow
 
@@ -80,7 +80,7 @@ services:
 
     volumes:
       - ./src:/app/src
-      - ../Data:/Data
+      - ../Data:/app/Data
       - mlflow_data:/mlflow
 
     environment:

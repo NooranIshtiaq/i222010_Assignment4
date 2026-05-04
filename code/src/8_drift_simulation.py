@@ -20,9 +20,11 @@ from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import recall_score, roc_auc_score
 
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-DATA_DIR = os.path.join(BASE_DIR, "Data")
-INTERIM_DIR = os.path.join(DATA_DIR, "interim")
+#BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+#DATA_DIR = os.path.join(BASE_DIR, "Data")
+#INTERIM_DIR = os.path.join(DATA_DIR, "interim")
+DATA_DIR = "/app/Data"
+INTERIM_DIR = "/app/Data/interim"
 ARTIFACTS_DIR = os.path.join(os.path.dirname(__file__), "..", "artifacts", "plots")
 
 MLFLOW_URI = os.environ.get("MLFLOW_TRACKING_URI", "http://localhost:5000")

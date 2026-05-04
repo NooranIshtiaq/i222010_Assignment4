@@ -9,8 +9,14 @@ import json
 import time
 import os
 
-DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "Data")
-INTERIM_DIR = os.path.join(DATA_DIR, "interim")
+#DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "Data")
+#INTERIM_DIR = os.path.join(DATA_DIR, "interim")
+
+#BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+#DATA_DIR = os.path.join(BASE_DIR, "Data")
+#INTERIM_DIR = os.path.join(DATA_DIR, "interim")
+DATA_DIR = "/app/Data"
+INTERIM_DIR = "/app/Data/interim"
 
 # Data-level metrics
 MISSING_VALUES = Gauge("data_missing_values_count", "Number of missing values in raw data")

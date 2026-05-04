@@ -10,9 +10,15 @@ import joblib
 import json
 import os
 
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-DATA_DIR = os.path.join(BASE_DIR, "Data")
-INTERIM_DIR = os.path.join(DATA_DIR, "interim")
+#BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+#DATA_DIR = os.path.join(BASE_DIR, "Data")
+#INTERIM_DIR = os.path.join(DATA_DIR, "interim")
+
+#BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+#DATA_DIR = os.path.join(BASE_DIR, "Data")
+#INTERIM_DIR = os.path.join(DATA_DIR, "interim")
+DATA_DIR = "/app/Data"
+INTERIM_DIR = "/app/Data/interim"
 
 MLFLOW_URI = os.environ.get("MLFLOW_TRACKING_URI", "http://localhost:5000")
 
