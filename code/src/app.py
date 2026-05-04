@@ -18,7 +18,7 @@ app = FastAPI(title="Fraud Detection API")
 # --- SYSTEM METRICS (Task 6A) ---
 REQUEST_COUNT = Counter("api_requests_total", "Total API Requests", ["http_status"])
 LATENCY = Histogram("api_prediction_latency_seconds", "Inference Latency",
-                     buckets=[0.01, 0.05, 0.1, 0.25, 0.5, 1.0, 2.0, 5.0])
+                    buckets=[0.01, 0.05, 0.1, 0.25, 0.5, 1.0, 2.0, 5.0])
 ERROR_COUNT = Counter("api_errors_total", "Total 5xx Errors")
 
 # --- MODEL METRICS (Task 6B) ---
@@ -69,7 +69,6 @@ async def health():
 
 @app.post("/predict")
 async def predict(data: dict):
-    global model
     if model is None:
         load_champion_model()
         if model is None:

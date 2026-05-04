@@ -12,6 +12,7 @@ BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 DATA_DIR = os.path.join(BASE_DIR, "Data")
 INTERIM_DIR = os.path.join(DATA_DIR, "interim")
 
+
 def ingest():
     print("--- Step 1: Data Ingestion ---")
     os.makedirs(INTERIM_DIR, exist_ok=True)

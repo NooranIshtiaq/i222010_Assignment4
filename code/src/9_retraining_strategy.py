@@ -157,7 +157,7 @@ def run_retraining_strategy():
             comp_path = os.path.join(INTERIM_DIR, "retraining_strategy_comparison.csv")
             comp_df.to_csv(comp_path, index=False)
             mlflow.log_artifact(comp_path)
-            print(f"\n  Strategy Comparison:")
+            print("\n  Strategy Comparison:")
             print(comp_df.to_string(index=False))
     else:
         print("  → No retraining needed. Model is stable.")

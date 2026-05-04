@@ -74,8 +74,8 @@ def analyze_business_impact():
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
     x = range(len(df))
     w = 0.3
-    axes[0].bar([i - w/2 for i in x], df["Fraud_Loss"], w, label="Fraud Loss", color="crimson")
-    axes[0].bar([i + w/2 for i in x], df["Investigation_Cost"], w, label="Investigation Cost", color="orange")
+    axes[0].bar([i - w / 2 for i in x], df["Fraud_Loss"], w, label="Fraud Loss", color="crimson")
+    axes[0].bar([i + w / 2 for i in x], df["Investigation_Cost"], w, label="Investigation Cost", color="orange")
     axes[0].set_xticks(list(x))
     axes[0].set_xticklabels(df["Model"], fontsize=8)
     axes[0].set_ylabel("Cost ($)")
@@ -95,7 +95,7 @@ def analyze_business_impact():
         mlflow.log_artifact(report_path)
         mlflow.log_artifact(chart_path)
 
-    print(f"\n  Business impact report saved.")
+    print("\n  Business impact report saved.")
 
 
 if __name__ == "__main__":

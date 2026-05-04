@@ -18,7 +18,7 @@ warnings.filterwarnings("ignore")
 
 from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import recall_score, precision_score, f1_score, roc_auc_score
+from sklearn.metrics import recall_score, roc_auc_score
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 DATA_DIR = os.path.join(BASE_DIR, "Data")
@@ -62,8 +62,6 @@ def simulate_drift():
 
     X_early = early_df[feature_cols]
     y_early = early_df["isFraud"]
-    X_late = late_df[feature_cols]
-    y_late_original = late_df["isFraud"].copy()
 
     X_train, X_val, y_train, y_val = train_test_split(
         X_early, y_early, test_size=0.2, random_state=42
@@ -176,7 +174,7 @@ def simulate_drift():
 
     status = "DETECTED ⚠️" if drift_report["drift_detected"] else "NOT DETECTED ✓"
     print(f"\n  Drift Status: {status}")
-    print(f"  ✓ Drift simulation complete. Report saved.")
+    print("\n  ✓ Drift simulation complete. Report saved.")
 
 
 if __name__ == "__main__":

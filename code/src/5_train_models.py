@@ -10,7 +10,6 @@ import mlflow
 import pandas as pd
 import numpy as np
 import joblib
-import json
 import os
 from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
@@ -27,6 +26,7 @@ DATA_DIR = os.path.join(BASE_DIR, "Data")
 INTERIM_DIR = os.path.join(DATA_DIR, "interim")
 
 MLFLOW_URI = os.environ.get("MLFLOW_TRACKING_URI", "http://mlflow_server:5000")
+
 
 def train_models():
     print("--- Step 5: Model Training ---")
