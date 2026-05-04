@@ -1,0 +1,7 @@
+Model,Sampler,Precision,Recall,F1,AUC_ROC
+1_XGBoost_Standard,None,0.8718,0.6415,0.7391,0.9502
+2_XGBoost_Cost_Sensitive,ClassWeighting(10x),0.8605,0.6981,0.7708,0.9627
+3_XGBoost_SMOTE,SMOTE,0.7826,0.6792,0.7273,0.9546
+4_XGBoost_Undersampling,RandomUnderSampler,0.1769,0.9245,0.297,0.9373
+5_LightGBM_Baseline,None,0.9744,0.717,0.8261,0.9618
+6_Hybrid_RF_SelectFromModel,None,1.0,0.5472,0.7073,0.9553

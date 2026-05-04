@@ -1,0 +1,8 @@
+{
+  "baseline_recall": 0.4166666666666667,
+  "baseline_auc": 0.9049494081710576,
+  "drifted_recall": 0.056016597510373446,
+  "drifted_auc": 0.6120786046390938,
+  "recall_delta": -0.3606500691562932,
+  "auc_delta": -0.2928708035319638,
+  "drift_detected": 
