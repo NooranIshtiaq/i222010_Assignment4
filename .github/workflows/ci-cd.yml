@@ -33,9 +33,12 @@ jobs:
         with:
           python-version: '3.10'
 
+      # ✅ FIXED: install ALL dependencies
       - name: Install dependencies
         run: |
-          pip install flake8 pytest pandas scikit-learn numpy
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install flake8 pytest
 
       - name: Run Linting (flake8)
         run: |
