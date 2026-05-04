@@ -132,7 +132,7 @@ def evaluate():
             # ---- Task 9: SHAP Explainability ----
             if "Hybrid" not in model_name:
                 try:
-                    print(f"    Generating SHAP analysis...")
+                    print("    Generating SHAP analysis...")
                     # Use a subset for speed
                     X_shap = X_test.iloc[:200]
 
