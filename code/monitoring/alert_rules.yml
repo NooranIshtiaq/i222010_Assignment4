@@ -1,0 +1,52 @@
+groups:
+  - name: fraud_detection_alerts
+    rules:
+      # Alert: Fraud Recall drops below threshold
+      - alert: FraudRecallLow
+        expr: model_fraud_recall < 0.85
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Fraud recall has dropped below 0.85"
+          description: "Current recall is {{ $value }}. Retraining may be needed."
+
+      # Alert: Data drift exceeds threshold
+      - alert: DataDriftHigh
+        expr: feature_drift_score > 0.1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Feature drift score exceeds threshold"
+          description: "Current drift score is {{ $value }}. Data distribution has shifted."
+
+      # Alert: API latency spike
+      - alert: HighAPILatency
+        expr: histogram_quantile(0.95, rate(api_prediction_latency_seconds_bucket[5m])) > 2.0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API p95 latency exceeds 2 seconds"
+          description: "Current p95 latency is {{ $value }}s."
+
+      # Alert: High error rate
+      - alert: HighErrorRate
+        expr: rate(api_errors_total[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "API error rate exceeds 5%"
+          description: "Error rate is {{ $value }} errors/sec."
+
+      # Alert: Missing values spike
+      - alert: HighMissingValues
+        expr: data_missing_values_count > 5000
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High missing values detected in data"
+          description: "Missing values count is {{ $value }}."

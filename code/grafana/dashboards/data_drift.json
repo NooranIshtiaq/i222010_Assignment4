@@ -1,0 +1,162 @@
+{
+  "id": null,
+  "uid": "data-drift",
+  "title": "Data Drift Dashboard",
+  "tags": [
+    "fraud-detection",
+    "drift"
+  ],
+  "timezone": "browser",
+  "refresh": "10s",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Feature Drift Score",
+      "type": "timeseries",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "feature_drift_score",
+          "legendFormat": "Drift Score",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 0.05
+              },
+              {
+                "color": "red",
+                "value": 0.1
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Missing Values Trend",
+      "type": "timeseries",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "data_missing_values_count",
+          "legendFormat": "Missing Count",
+          "refId": "A"
+        },
+        {
+          "expr": "api_null_values_total",
+          "legendFormat": "API Input Nulls",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "TransactionAmt \u00e2\u20ac\u201d Mean",
+      "type": "timeseries",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "targets": [
+        {
+          "expr": "feature_mean_transaction_amt",
+          "legendFormat": "Mean TxnAmt",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "TransactionAmt \u00e2\u20ac\u201d Std Dev",
+      "type": "timeseries",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "targets": [
+        {
+          "expr": "feature_std_transaction_amt",
+          "legendFormat": "Std TxnAmt",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Input Anomalies Detected",
+      "type": "stat",
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "targets": [
+        {
+          "expr": "input_anomaly_total",
+          "legendFormat": "Anomalies",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 10
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 6,
+      "title": "Drift Alert Status",
+      "type": "stat",
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "targets": [
+        {
+          "expr": "ALERTS{alertname='DataDriftHigh'}",
+          "legendFormat": "Drift Alert",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}

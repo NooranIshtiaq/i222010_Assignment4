@@ -1,0 +1,41 @@
+# Large data files (keep locally, don't push to GitHub)
+Data/train_transaction.csv
+Data/test_transaction.csv
+Data/train_identity.csv
+Data/test_identity.csv
+Data/sample_submission.csv
+
+# But keep metadata/interim files
+!Data/interim/
+!Data/sample_submission.csv
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+dist/
+build/
+
+# ML artifacts
+mlflow_data/
+*.pkl
+*.joblib
+*.h5
+*.model
+
+# Environment
+.venv/
+venv/
+env/
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db

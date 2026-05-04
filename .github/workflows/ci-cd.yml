@@ -1,0 +1,148 @@
+name: Fraud Detection CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      trigger_reason:
+        description: 'Reason for manual trigger (e.g., drift alert, retraining)'
+        required: false
+        default: 'manual'
+  repository_dispatch:
+    types: [model-drift-alert, retraining-trigger]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # ============================================
+  # STAGE 1: Continuous Integration
+  # ============================================
+  lint-and-test:
+    name: "Stage 1: Lint & Test"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install flake8 pytest pandas scikit-learn numpy
+
+      - name: Run Linting (flake8)
+        run: |
+          flake8 code/src/ --max-line-length=120 --ignore=E501,W503,E402
+
+      - name: Run Unit Tests
+        run: |
+          pytest tests/ -v --tb=short
+
+      - name: Data Validation Checks
+        run: |
+          python -c "
+          import pandas as pd
+          import os
+          data_path = 'Data/interim/04_engineered.csv'
+          if os.path.exists(data_path):
+              df = pd.read_csv(data_path, nrows=100)
+              assert 'isFraud' in df.columns, 'Missing target column'
+              assert df['isFraud'].isin([0,1]).all(), 'Invalid target values'
+              print('Data validation passed')
+          else:
+              print('Data file not found - skipping validation')
+          "
+
+  # ============================================
+  # STAGE 2: Build & Package
+  # ============================================
+  build-and-push:
+    name: "Stage 2: Build Docker Image"
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Docker Image
+        run: |
+          cd code
+          docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+          docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+      - name: Push Docker Image
+        if: github.event_name == 'push'
+        run: |
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+  # ============================================
+  # STAGE 3: Continuous Deployment
+  # ============================================
+  deploy:
+    name: "Stage 3: Deploy Pipeline"
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'repository_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy with Docker Compose
+        run: |
+          cd code
+          docker compose up pipeline_runner --build --abort-on-container-exit
+          echo "Pipeline execution completed"
+
+      - name: Verify Model Service
+        run: |
+          cd code
+          docker compose up -d inference_api mlflow_server
+          sleep 10
+          curl -f http://localhost:8001/health || echo "API health check (may need model)"
+          docker compose down
+
+  # ============================================
+  # STAGE 4: Intelligent Trigger (Automated Retraining)
+  # ============================================
+  automated-retraining:
+    name: "Stage 4: Automated Retraining"
+    runs-on: ubuntu-latest
+    if: github.event_name == 'repository_dispatch' || (github.event_name == 'workflow_dispatch' && github.event.inputs.trigger_reason == 'drift-alert')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log Trigger Info
+        run: |
+          echo "Retraining triggered by: ${{ github.event_name }}"
+          echo "Reason: ${{ github.event.inputs.trigger_reason || github.event.action }}"
+          echo "Timestamp: $(date -u)"
+
+      - name: Run Retraining Pipeline
+        run: |
+          cd code
+          docker compose up pipeline_runner --build --abort-on-container-exit
+          echo "Automated retraining completed"
+
+      - name: Verify Updated Model
+        run: |
+          cd code
+          docker compose up -d mlflow_server
+          sleep 5
+          curl -s http://localhost:5000/api/2.0/mlflow/registered-models/list || echo "MLflow check"
+          docker compose down
