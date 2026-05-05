@@ -126,7 +126,11 @@ jobs:
   automated-retraining:
     name: "Stage 4: Automated Retraining"
     runs-on: ubuntu-latest
-    if: github.event_name == 'repository_dispatch' || (github.event_name == 'workflow_dispatch' && github.event.inputs.trigger_reason == 'drift-alert')
+    needs: build-and-push
+    if: |
+      github.event_name == 'push' ||
+      github.event_name == 'repository_dispatch' ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.trigger_reason == 'drift-alert')
     steps:
       - uses: actions/checkout@v4
 
