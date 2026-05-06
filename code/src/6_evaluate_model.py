@@ -146,7 +146,7 @@ def evaluate():
                     else:
                         explainer = shap.TreeExplainer(model)
                     shap_values = explainer.shap_values(X_shap)
-                    
+
                     # Robust extraction for the fraud class (pos)
                     # Case 1: List of arrays [neg, pos]
                     if isinstance(shap_values, list):
@@ -171,11 +171,11 @@ def evaluate():
                     # ---- Task 9: SHAP Waterfall Plot (Local) ----
                     # Get positional indices of fraud cases in the 200-sample subset
                     fraud_indices_in_subset = np.where(y_test.iloc[:200] == 1)[0][:2]
-                    
+
                     for i, idx in enumerate(fraud_indices_in_subset):
                         try:
                             plt.figure(figsize=(10, 6))
-                            
+
                             # Determine base value for the fraud class
                             if isinstance(explainer.expected_value, (list, np.ndarray)):
                                 ev = explainer.expected_value[1] if len(explainer.expected_value) > 1 else explainer.expected_value[0]

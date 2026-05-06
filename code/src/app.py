@@ -137,21 +137,21 @@ async def predict(data: dict):
         recent_predictions.append(pred_value)
         if actual is not None:
             recent_actuals.append(int(actual))
-            
+
             # Compute live metrics if we have enough samples
             if len(recent_predictions) >= 10:
                 preds = np.array(recent_predictions)
                 acts = np.array(recent_actuals)
-                
+
                 tp = np.sum((preds == 1) & (acts == 1))
                 fp = np.sum((preds == 1) & (acts == 0))
                 tn = np.sum((preds == 0) & (acts == 0))
                 fn = np.sum((preds == 0) & (acts == 1))
-                
+
                 recall = tp / (tp + fn) if (tp + fn) > 0 else 0
                 precision = tp / (tp + fp) if (tp + fp) > 0 else 0
                 fpr = fp / (fp + tn) if (fp + tn) > 0 else 0
-                
+
                 MODEL_RECALL.set(recall)
                 MODEL_PRECISION.set(precision)
                 MODEL_FPR.set(fpr)
