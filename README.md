@@ -103,7 +103,7 @@ curl -X POST http://localhost:8001/predict -H "Content-Type: application/json" -
 ---
 
 ## 📈 Dashboard Preview
-![Grafana Dashboard](grafana.JPG)
+![Grafana Dashboard](screenshots/model_performance_dash1.JPG)
 
 ## 📄 Deliverables
 *   **MLflow Artifacts**: Model weights, evaluation plots, and SHAP explainability reports are stored as artifacts in the MLflow UI.

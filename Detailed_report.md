@@ -17,46 +17,41 @@ The project utilizes a containerized architecture managed via **Docker Compose**
 
 ## 3. Task 2 & 4: Data Challenges & Cost-Sensitive Learning
 ### 3.1 Imbalance Handling
-We compared three strategies to handle the extreme class imbalance (only ~3.5% fraud cases):
-1.  **SMOTE (Synthetic Minority Over-sampling Technique)**: Improved recall but increased training time.
-2.  **Random Undersampling**: Fastest training but lost some data variety.
-3.  **Class Weighting (10x)**: Assigned higher penalty to fraud cases during training.
+We compared three strategies to handle the extreme class imbalance (only ~3.5% fraud cases).
+
+![Model Comparison](screenshots/model_comparison.JPG)
 
 ### 3.2 Business Impact (Task 4)
-| Model | Recall | Precision | Total Cost (Loss + Investigation) | Net Savings |
-|-------|--------|-----------|-----------------------------------|-------------|
-| Standard XGBoost | ~0.45 | ~0.85 | $XXXX | $XXXX |
-| Cost-Sensitive XGB | ~0.78 | ~0.62 | $XXXX | **$XXXX** |
+Cost-sensitive training significantly reduced "False Negatives," saving more money despite a slight increase in "False Alarms."
 
-**Conclusion**: Cost-sensitive training significantly reduced "False Negatives," saving more money despite a slight increase in "False Alarms."
+![Cost-Sensitive Performance](screenshots/xgboost_cost_sensitive.JPG)
 
 ## 4. Task 3: Model Complexity
-We evaluated three different architectures:
-*   **XGBoost**: High performance with gradient boosting.
-*   **LightGBM**: Optimized for speed and large datasets.
-*   **Hybrid Model**: A Pipeline combining `SelectFromModel` (Random Forest based feature selection) and a Random Forest Classifier.
+We evaluated three different architectures. Performance metrics for LightGBM and XGBoost variants are shown below:
+
+![LightGBM Performance](screenshots/lightGBM_baseline.JPG)
 
 ## 5. Task 5: CI/CD Pipeline
-Implemented using **GitHub Actions** (`ci-cd.yml`):
-*   **CI Stage**: Triggered on code push. Performs linting (`flake8`) and unit testing (`pytest`).
-*   **Build Stage**: Builds Docker images for the Inference API and pushes them to the registry.
-*   **CD Stage**: Triggers retraining or deployment based on performance triggers.
+Implemented using **GitHub Actions**.
+
+![GitHub Actions Workflow](screenshots/github_ci_cd.JPG)
 
 ## 6. Task 6: Observability & Monitoring
-A comprehensive monitoring layer was built using **Prometheus** and **Grafana**:
-*   **System Level**: Tracked API latency and throughput.
-*   **Model Level**: Live monitoring of "Real-time Recall" and "Fraud Rate."
-*   **Data Level**: Tracking "Null Value Trends" and "Feature Drift Scores" to detect distribution shifts.
+A comprehensive monitoring layer was built using **Prometheus** and **Grafana**.
+
+![Model Performance Dashboard](screenshots/model_performance_dash1.JPG)
+![Data Drift Dashboard](screenshots/data_drift_dashboard.JPG)
 
 ## 7. Task 7 & 8: Drift Simulation & Retraining
-We simulated **Time-based Drift** by introducing new fraud patterns in recent data batches.
-*   **Trigger**: A Prometheus alert triggers the `/webhook` endpoint in the API.
-*   **Retraining**: The system automatically triggers the `retrain.yml` workflow when recall drops below 0.70.
+We simulated **Time-based Drift** and introduced new fraud patterns.
+
+![Prometheus Alerts](screenshots/promethus_alerts.JPG)
 
 ## 8. Task 9: Model Explainability (SHAP)
-Using **SHAP**, we identified the top features driving fraud predictions:
-*   `TransactionAmt` and `card1` were found to be major predictors.
-*   Global feature importance plots were generated and logged as MLflow artifacts to provide transparency into "Why" the model predicts fraud.
+Using **SHAP**, we identified the top features driving fraud predictions.
+
+![SHAP Summary Plot](screenshots/shap_summary.JPG)
+![SHAP Waterfall Plot](screenshots/shap_waterfall.JPG)
 
 ---
 ## 9. Final Conclusion
