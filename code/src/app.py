@@ -143,6 +143,7 @@ async def predict(data: dict):
         REQUEST_COUNT.labels(http_status="500").inc()
         return JSONResponse(status_code=500, content={"error": str(e)})
 
+
 @app.post("/webhook")
 async def webhook(request: Request):
     alert = await request.json()
