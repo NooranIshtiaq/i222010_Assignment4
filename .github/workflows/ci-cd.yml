@@ -12,7 +12,7 @@ on:
         required: false
         default: 'manual'
   repository_dispatch:
-    types: [model-drift-alert, retraining-trigger]
+    types: [model-drift-alert, retrain_trigger]
 
 env:
   REGISTRY: ghcr.io

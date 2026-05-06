@@ -1,0 +1,4 @@
+Strategy,Trigger,Stability,Compute_Cost,Performance
+Threshold-based,Recall < 0.85,High — retrains only when needed,Low — on-demand,AUC improvement: +0.0000
+Periodic,Every 7 days,Medium — may retrain unnecessarily,Medium — fixed schedule,Consistent but may waste resources
+Hybrid (Used),Threshold OR periodic OR drift,Highest — covers all scenarios,54.4s per retrain,Best balance. Current: AUC=0.9627

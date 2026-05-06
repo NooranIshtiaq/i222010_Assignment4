@@ -13,5 +13,5 @@ receivers:
     webhook_configs:
       # This webhook simulates triggering CI/CD pipeline (Task 5 integration)
       # In production, this would call GitHub Actions repository_dispatch API
-      - url: 'http://inference_api:8001/health'
+      - url: 'http://inference_api:8001/webhook'
         send_resolved: true

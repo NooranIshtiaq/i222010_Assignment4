@@ -12,6 +12,15 @@ from collections import deque
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from prometheus_client import Counter, Histogram, Gauge, make_asgi_app
+import requests
+from fastapi import Request
+
+GITHUB_TOKEN ="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"
+
+GITHUB_USER = "NooranIshtiaq"
+GITHUB_REPO = "i222010_Assignment4"
+
+
 
 app = FastAPI(title="Fraud Detection API")
 
@@ -41,15 +50,22 @@ recent_actuals = deque(maxlen=500)
 MLFLOW_URI = os.environ.get("MLFLOW_TRACKING_URI", "http://localhost:5000")
 
 
-def load_champion_model():
+def load_champion_model(retries=10, delay=5):
     global model
     if model is None:
-        try:
-            mlflow.set_tracking_uri(MLFLOW_URI)
-            model = mlflow.pyfunc.load_model(model_uri="models:/FraudModelV1/latest")
-            print("Champion Model loaded successfully!")
-        except Exception as e:
-            print(f"Model load failed: {e}")
+        for i in range(retries):
+            try:
+                mlflow.set_tracking_uri(MLFLOW_URI)
+                # Check if model exists first to avoid confusing error logs
+                model = mlflow.pyfunc.load_model(model_uri="models:/FraudModelV1/latest")
+                print("Champion Model loaded successfully!")
+                return
+            except Exception as e:
+                print(f"Model load attempt {i+1}/{retries} failed: {e}")
+                if i < retries - 1:
+                    time.sleep(delay)
+                else:
+                    print("Max retries reached. Model load failed.")
 
 
 @app.on_event("startup")
@@ -128,6 +144,28 @@ async def predict(data: dict):
         REQUEST_COUNT.labels(http_status="500").inc()
         return JSONResponse(status_code=500, content={"error": str(e)})
 
+@app.post("/webhook")
+async def webhook(request: Request):
+    alert = await request.json()
+    print("🚨 Alert received:", alert)
+
+    url = f"https://api.github.com/repos/{GITHUB_USER}/{GITHUB_REPO}/dispatches"
+
+    headers = {
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github+json"
+    }
+
+    payload = {
+        "event_type": "retrain_trigger"
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+
+    return {
+        "status": "trigger_sent",
+        "github_status": response.status_code
+    }
 
 # Mount Prometheus metrics endpoint
 app.mount("/metrics", make_asgi_app())

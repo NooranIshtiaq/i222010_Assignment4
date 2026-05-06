@@ -5,4 +5,5 @@
   "drifted_auc": 0.6120786046390938,
   "recall_delta": -0.3606500691562932,
   "auc_delta": -0.2928708035319638,
-  "drift_detected": 
+  "drift_detected": true
+}

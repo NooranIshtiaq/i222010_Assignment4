@@ -11,7 +11,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy source code
+# Copy source codea
 COPY src/ /app/src/
 COPY run_pipeline.py /app/run_pipeline.py
 

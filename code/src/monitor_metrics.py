@@ -19,9 +19,10 @@ DATA_DIR = "/app/Data"
 INTERIM_DIR = "/app/Data/interim"
 
 # Data-level metrics
-MISSING_VALUES = Gauge("data_missing_values_count", "Number of missing values in raw data")
 FEATURE_MEAN_TXN_AMT = Gauge("feature_mean_transaction_amt", "Mean TransactionAmt")
 FEATURE_STD_TXN_AMT = Gauge("feature_std_transaction_amt", "Std TransactionAmt")
+MISSING_VALUES_COUNT = Gauge("data_missing_values_count", "Number of missing values in raw data")
+FEATURE_DRIFT_SCORE = Gauge("feature_drift_score", "Feature distribution drift score (AUC Delta)")
 
 # Model-level metrics
 FRAUD_RECALL = Gauge("model_fraud_recall", "Current recall for fraud class")
@@ -39,10 +40,17 @@ def export_metrics():
             raw_path = os.path.join(INTERIM_DIR, "01_raw.csv")
             if os.path.exists(raw_path):
                 df = pd.read_csv(raw_path, nrows=1000)
-                MISSING_VALUES.set(int(df.isnull().sum().sum()))
+                MISSING_VALUES_COUNT.set(int(df.isnull().sum().sum()))
                 if "TransactionAmt" in df.columns:
                     FEATURE_MEAN_TXN_AMT.set(float(df["TransactionAmt"].mean()))
                     FEATURE_STD_TXN_AMT.set(float(df["TransactionAmt"].std()))
+            
+            # Read drift report
+            drift_path = os.path.join(INTERIM_DIR, "drift_report.json")
+            if os.path.exists(drift_path):
+                with open(drift_path, "r") as f:
+                    drift = json.load(f)
+                FEATURE_DRIFT_SCORE.set(abs(drift.get("auc_delta", 0)))
         except Exception:
             pass
 

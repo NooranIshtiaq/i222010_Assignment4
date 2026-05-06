@@ -1,0 +1,3 @@
+Model,Recall,Precision,FN_Missed_Fraud,FP_False_Alarms,Fraud_Loss,Investigation_Cost,Total_Cost,Net_Savings
+Standard Training,0.6415094339622641,0.8717948717948718,19,5,2850.0,250.0,3100.0,2000.0
+Cost-Sensitive (10x FN penalty),0.6981132075471698,0.8604651162790697,16,6,2400.0,300.0,2700.0,2850.0
