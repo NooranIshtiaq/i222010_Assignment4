@@ -18,7 +18,8 @@ print("Starting live traffic simulation... Press Ctrl+C to stop.")
 try:
     for i in range(10000):
         # Pick a random row
-        row = clean_df.sample(1).iloc[0].to_dict()
+        row = df.sample(1).iloc[0].to_dict()
+        if "TransactionID" in row: del row["TransactionID"]
         
         # 10% chance to send an anomaly (tons of nulls) to trigger anomaly alerts
         if random.random() < 0.10:

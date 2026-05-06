@@ -35,7 +35,7 @@ def send_bulk(n=50):
             sample_row = non_fraud_df.sample(1).iloc[0].to_dict()
             label = "NORMAL"
             
-        clean_row = {k: (v.item() if hasattr(v, "item") else v) for k, v in sample_row.items() if k not in to_drop}
+        clean_row = {k: (v.item() if hasattr(v, "item") else v) for k, v in sample_row.items() if k != "TransactionID"}
         
         try:
             response = requests.post(url, json=clean_row)

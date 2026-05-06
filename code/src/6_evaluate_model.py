@@ -146,14 +146,55 @@ def evaluate():
                     else:
                         explainer = shap.TreeExplainer(model)
                     shap_values = explainer.shap_values(X_shap)
+                    
+                    # Robust extraction for the fraud class (pos)
+                    # Case 1: List of arrays [neg, pos]
+                    if isinstance(shap_values, list):
+                        sv_fraud = shap_values[1] if len(shap_values) > 1 else shap_values[0]
+                    # Case 2: 3D Array (samples, features, classes)
+                    elif len(getattr(shap_values, "shape", [])) == 3:
+                        sv_fraud = shap_values[:, :, 1]
+                    # Case 3: 2D Array (samples, features)
+                    else:
+                        sv_fraud = shap_values
 
-                    # SHAP Summary Plot
+                    # SHAP Summary Plot (Global)
                     plt.figure(figsize=(10, 6))
-                    shap.summary_plot(shap_values, X_shap, show=False, max_display=15)
-                    shap_path = os.path.join(ARTIFACTS_DIR, f"shap_summary_{model_name}.png")
-                    plt.savefig(shap_path, bbox_inches="tight", dpi=100)
+                    # Ensure sv_fraud is 2D before passing to summary_plot
+                    if len(getattr(sv_fraud, "shape", [])) >= 2:
+                        shap.summary_plot(sv_fraud, X_shap, show=False, max_display=15)
+                        shap_path = os.path.join(ARTIFACTS_DIR, f"shap_summary_{model_name}.png")
+                        plt.savefig(shap_path, bbox_inches="tight", dpi=100)
                     plt.close()
                     mlflow.log_artifact(shap_path)
+
+                    # ---- Task 9: SHAP Waterfall Plot (Local) ----
+                    # Get positional indices of fraud cases in the 200-sample subset
+                    fraud_indices_in_subset = np.where(y_test.iloc[:200] == 1)[0][:2]
+                    
+                    for i, idx in enumerate(fraud_indices_in_subset):
+                        try:
+                            plt.figure(figsize=(10, 6))
+                            
+                            # Determine base value for the fraud class
+                            if isinstance(explainer.expected_value, (list, np.ndarray)):
+                                ev = explainer.expected_value[1] if len(explainer.expected_value) > 1 else explainer.expected_value[0]
+                            else:
+                                ev = explainer.expected_value
+
+                            exp = shap.Explanation(
+                                values=sv_fraud[idx],
+                                base_values=ev,
+                                data=X_shap.iloc[idx],
+                                feature_names=X_test.columns.tolist()
+                            )
+                            shap.waterfall_plot(exp, show=False, max_display=15)
+                            wf_path = os.path.join(ARTIFACTS_DIR, f"shap_waterfall_{model_name}_sample{i}.png")
+                            plt.savefig(wf_path, bbox_inches="tight", dpi=100)
+                            plt.close()
+                            mlflow.log_artifact(wf_path)
+                        except Exception as inner_e:
+                            print(f"      Waterfall failed for sample {i}: {inner_e}")
 
                     # Feature Importance Bar Chart
                     if hasattr(model, "feature_importances_"):

@@ -15,7 +15,7 @@ from prometheus_client import Counter, Histogram, Gauge, make_asgi_app
 import requests
 from fastapi import Request
 
-GITHUB_TOKEN = "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"
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN")
 
 GITHUB_USER = "NooranIshtiaq"
 GITHUB_REPO = "i222010_Assignment4"
@@ -113,6 +113,13 @@ async def predict(data: dict):
                 if col not in df.columns:
                     df[col] = 0
             df = df[expected_features]
+        else:
+            # Fallback padding to 414 features if signature is missing
+            current_cols = len(df.columns)
+            if current_cols < 414:
+                for i in range(414 - current_cols):
+                    df[f"padded_feat_{i}"] = 0
+            df = df.iloc[:, :414]
 
         df = df.replace([np.inf, -np.inf], np.nan).fillna(0)
 
@@ -126,7 +133,29 @@ async def predict(data: dict):
             confidence = 1.0
 
         # Track predictions for live metrics
+        actual = data.get("isFraud")
         recent_predictions.append(pred_value)
+        if actual is not None:
+            recent_actuals.append(int(actual))
+            
+            # Compute live metrics if we have enough samples
+            if len(recent_predictions) >= 10:
+                preds = np.array(recent_predictions)
+                acts = np.array(recent_actuals)
+                
+                tp = np.sum((preds == 1) & (acts == 1))
+                fp = np.sum((preds == 1) & (acts == 0))
+                tn = np.sum((preds == 0) & (acts == 0))
+                fn = np.sum((preds == 0) & (acts == 1))
+                
+                recall = tp / (tp + fn) if (tp + fn) > 0 else 0
+                precision = tp / (tp + fp) if (tp + fp) > 0 else 0
+                fpr = fp / (fp + tn) if (fp + tn) > 0 else 0
+                
+                MODEL_RECALL.set(recall)
+                MODEL_PRECISION.set(precision)
+                MODEL_FPR.set(fpr)
+
         fraud_rate = sum(recent_predictions) / len(recent_predictions)
         FRAUD_RATE.set(fraud_rate)
         FRAUD_CONFIDENCE.set(confidence)
