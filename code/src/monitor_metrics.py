@@ -44,7 +44,6 @@ def export_metrics():
                 if "TransactionAmt" in df.columns:
                     FEATURE_MEAN_TXN_AMT.set(float(df["TransactionAmt"].mean()))
                     FEATURE_STD_TXN_AMT.set(float(df["TransactionAmt"].std()))
-            
             # Read drift report
             drift_path = os.path.join(INTERIM_DIR, "drift_report.json")
             if os.path.exists(drift_path):

@@ -15,11 +15,10 @@ from prometheus_client import Counter, Histogram, Gauge, make_asgi_app
 import requests
 from fastapi import Request
 
-GITHUB_TOKEN ="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"
+GITHUB_TOKEN = "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"
 
 GITHUB_USER = "NooranIshtiaq"
 GITHUB_REPO = "i222010_Assignment4"
-
 
 
 app = FastAPI(title="Fraud Detection API")
